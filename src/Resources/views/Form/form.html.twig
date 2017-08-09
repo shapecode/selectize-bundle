@@ -1,0 +1,20 @@
+{% block selectize_widget %}
+    {% set formData = form.vars.data %}
+
+    <select {{ block('widget_attributes') }}>
+        {%- set options = choices -%}
+        {{- block('choice_widget_options') -}}
+        {% if formData is not empty and choices[formData] is not defined %}
+            <option value="{{ form.vars.data }}">{{ form.vars.data }}</option>
+        {% endif %}
+    </select>
+
+    <script type="text/javascript">
+        (function () {
+            $('#{{ form.vars.id }}').selectize({
+                create: true,
+                sortField: 'text'
+            });
+        })();
+    </script>
+{% endblock %}
