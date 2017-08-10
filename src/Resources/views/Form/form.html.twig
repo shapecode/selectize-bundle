@@ -1,19 +1,68 @@
 {% block selectize_widget %}
     {% set formData = form.vars.data %}
 
-    <select {{ block('widget_attributes') }}>
-        {%- set options = choices -%}
-        {{- block('choice_widget_options') -}}
-        {% if formData is not empty and choices[formData] is not defined %}
-            <option value="{{ form.vars.data }}">{{ form.vars.data }}</option>
-        {% endif %}
-    </select>
+    {% if multiple == false %}
+        <select {{ block('widget_attributes') }}>
+            {% if formData is not empty and choices[formData] is not defined %}
+                <option value="{{ formData }}">{{ formData }}</option>
+            {% endif %}
+
+            {% if choices|length > 0 %}
+                {% for id, label in choices %}
+                    <option value="{{ id }}">{{ label }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+    {% else %}
+        {%- set type = type|default('text') -%}
+        {{ block('form_widget_simple') }}
+    {% endif %}
 
     <script type="text/javascript">
         (function () {
             $('#{{ form.vars.id }}').selectize({
-                create: true,
-                sortField: 'text'
+                {% if allow_create %}
+                create: function (input, callback) {
+                    $.ajax({
+                        url: '{{ create_url }}',
+                        data: {
+                            value: input
+                        },
+                        type: 'GET',
+                        error: function () {
+                            callback();
+                        },
+                        success: function (res) {
+                            callback(res);
+                        }
+                    });
+                },
+                {% endif %}
+                loadThrottle: 500,
+                {% if placeholder is not empty %}
+                placeholder: '{{ placeholder }}',
+                {% endif %}
+                {% if allow_empty %}
+                allowEmptyOption: true,
+                {% endif %}
+                load: function (query, callback) {
+                    if (!query.length) return callback();
+
+                    $.ajax({
+                        url: '{{ remote_url }}',
+                        data: {
+                            q: query,
+                            page_limit: {{ page_limit }}
+                        },
+                        type: 'GET',
+                        error: function () {
+                            callback();
+                        },
+                        success: function (res) {
+                            callback(res);
+                        }
+                    });
+                }
             });
         })();
     </script>

@@ -1,0 +1,8 @@
+services:
+    shapecode_selectize.form_type.selectize:
+        class: Shapecode\Bundle\SelectizeBundle\Form\Type\Widgets\SelectizeType
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@router'
+        tags:
+            - { name: form.type }
