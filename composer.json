@@ -3,7 +3,7 @@
     "description": "This bundle integrates Selectize.js",
     "keywords": [
 	"typeahead",
-	"autocomplete"
+	"autocomplete",
         "autosuggest",
         "shapecode",
         "symfony",
